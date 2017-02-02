@@ -2,6 +2,8 @@
 from TheANNXor.Neuron import Neuron
 from TheANNXor.Layer import Layer
 
+# jkjkj
+
 
 class Synapse(object):
     def __init__(self, weight, neuron_left, neuron_right):
