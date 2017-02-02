@@ -15,3 +15,4 @@ class TrainingData:
     def end_file_read(self):
         self.text_file.close()
 
+#ffgfgfg
