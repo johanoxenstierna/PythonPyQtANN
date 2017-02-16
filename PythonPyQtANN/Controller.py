@@ -1,5 +1,6 @@
 
 
+
 import sys, random, math
 # gfdfdsghsgfdh
 from PyQt5.QtGui import *
@@ -10,7 +11,7 @@ from PythonPyQtANN.Net import Net, Synapse
 from PythonPyQtANN.Layer import Layer
 #from six import with_metaclass
 #im here
-
+#commited
 
 
 class Controller(QMainWindow):
