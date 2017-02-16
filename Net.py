@@ -1,6 +1,9 @@
 
 import math
+
+
 # ffgfg
+
 from PythonPyQtANN.Neuron import Neuron
 from PythonPyQtANN.Layer import Layer
 from PythonPyQtANN.TrainingData import TrainingData
@@ -127,6 +130,11 @@ class Net:
 
         setattr(self.get_neuron(0, 0), 'output', inputs[0])
         setattr(self.get_neuron(0, 1), 'output', inputs[1])
+
+
+        setattr(self.get_neuron(0, 0), 'output', inputs[0])
+        setattr(self.get_neuron(0, 1), 'output', inputs[1])
+
 
         self.expected = float(inputs[2])
 
