@@ -1,7 +1,7 @@
 
 
 import sys, random, math
-
+# gfdfdsghsgfdh
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -125,10 +125,13 @@ class Controller(QMainWindow):
             my_line_edit_out.setGeometry(c[0] + 25, c[1] - 10, 50, 20)
             self.l0outputs.append([i, my_line_edit_out])
 
+
             # gradients
             my_line_edit_grad = QLineEdit(self)
             my_line_edit_grad.setGeometry(c[0] + 25, c[1] + 15, 50, 20)
             self.l0gradients.append([i, my_line_edit_grad])
+
+
 
             # weights
             for j in range(0, 4):
