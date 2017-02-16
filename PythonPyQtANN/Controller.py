@@ -10,8 +10,6 @@ from PyQt5.QtCore import *
 from PythonPyQtANN.Net import Net, Synapse
 from PythonPyQtANN.Layer import Layer
 #from six import with_metaclass
-#im here
-#commited
 
 
 class Controller(QMainWindow):
