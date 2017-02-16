@@ -1,5 +1,5 @@
 
-from TheANNXor.Neuron import Neuron
+from PythonPyQtANN.Neuron import Neuron
 
 #This class is not necessary in this particular program because its static but
 #good to have it because it is always used in other cases
