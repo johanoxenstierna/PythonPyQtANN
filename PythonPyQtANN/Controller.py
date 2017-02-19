@@ -57,10 +57,12 @@ class Controller(QMainWindow):
         self.back_propL2_button.clicked.connect(m_net.back_propL2)
         self.back_propL1_button = QPushButton(self)
         self.back_propL1_button.clicked.connect(m_net.back_propL1)
+        self.update_weights_button = QPushButton(self)
+        self.update_weights_button.clicked.connect(m_net.update_weights)
         self.initialize_buttons()
 
 
-        # HCANGED
+
 
         self.show()
 
@@ -107,6 +109,8 @@ class Controller(QMainWindow):
         self.back_propL2_button.setText("B-propL2")
         self.back_propL1_button.setGeometry(500, 630, 100, 60)
         self.back_propL1_button.setText("B-propL1")
+        self.update_weights_button.setGeometry(10, 630, 100, 60)
+        self.update_weights_button.setText("Update")
 
     def initialize_and_draw_lineEdits(self):
 
@@ -208,7 +212,7 @@ class Controller(QMainWindow):
             # weights
             for j in range(0, 4):
                 weight = getattr(synapses[i, j], 'weight')
-                QLineEdit.setText(self.l0l1weights[i, j], str(weight))
+                QLineEdit.setText(self.l0l1weights[i, j], str(round(weight, 3)))
 
         # update second layer
         synapses = getattr(m_net, 'synapsesl1l2')
@@ -228,7 +232,7 @@ class Controller(QMainWindow):
 
             # weights
             weight = getattr(synapses[i, 0], 'weight')
-            QLineEdit.setText(self.l1l2weights[i, 0], str(weight))
+            QLineEdit.setText(self.l1l2weights[i, 0], str(round(weight, 3)))
 
         # update third layer
 
