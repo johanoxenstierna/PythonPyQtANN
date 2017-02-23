@@ -18,6 +18,13 @@ class Controller(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        a = m_net.transfer_function(0)
+
+        print("a: " + str(a))
+
+
+
+
         #initialize window
         self.text = "ggg"
         self.resize(700, 700)
@@ -30,13 +37,14 @@ class Controller(QMainWindow):
         self.l0gradients = []
         self.l0wsum = QLineEdit(self)
 
+        self.sumDOWL1L0_v = QLineEdit(self)
         self.synapse_buttonsl0l1 = {}
 
         self.l1inputs = []
         self.l1outputs = []
         self.l1gradients = []
-        self.l1wsum = QLineEdit(self)
 
+        self.sumDOWL2L1_v = QLineEdit(self)
         self.synapse_buttonsl1l2 = {}
 
         self.l2inputs = []
@@ -48,7 +56,10 @@ class Controller(QMainWindow):
         self.error_v = QLineEdit(self)
 
 
-        self.delta_printbox = QLineEdit(self)
+        self.delta_printbox = QTextEdit(self)
+
+
+
 
 
         # #create and set up events for buttons
@@ -75,28 +86,15 @@ class Controller(QMainWindow):
 
         #connect synapse buttons to functions
 
-        # myButton = self.synapse_buttonsl0l1[0, 0]
-        # myButton.clicked.connect(lambda: self.delta_print(0, 0, 0))
-
-        # for i in range(0, 2):
-        # for j in range(0, 4):
-
         setattr(m_net.synapsesl0l1[0, 0], 'deltaweight', 34.23)
         setattr(m_net.synapsesl0l1[0, 1], 'deltaweight', 12.0)
         setattr(m_net.synapsesl0l1[0, 2], 'deltaweight', 12.0)
         for i in range(0, 2):
             for j in range(0, 4):
                 self.synapse_buttonsl0l1[i, j].clicked.connect(partial(self.delta_print, 0, i, j))
-                # FINNNNALLY
-                # self.synapse_buttonsl0l1[0, 1].clicked.connect(lambda: self.delta_print(0, 0, j))
-                # self.synapse_buttonsl0l1[0, 2].clicked.connect(lambda: self.delta_print(0, 0, j))
 
-
-        # for k in range(0, 4):
-        #     myButton = self.synapse_buttonsl1l2[k, 0]
-        #     myButton.clicked.connect(lambda: self.delta_print(1, 0, 0))
-
-
+        for k in range(0, 4):
+            self.synapse_buttonsl1l2[k, 0].clicked.connect(partial(self.delta_print, 1, k, 0))
 
         self.show()
 
@@ -140,7 +138,7 @@ class Controller(QMainWindow):
         self.forward_propL1L2_button.setGeometry(500, 570, 100, 60)
         self.forward_propL1L2_button.setText("F-propL1L2")
         self.calculate_MSE_button.setGeometry(700, 570, 100, 60)
-        self.calculate_MSE_button.setText("Calculate MSE")
+        self.calculate_MSE_button.setText("Calc MSE, delta")
 
         self.back_propL2L1_button.setGeometry(500, 630, 100, 60)
         self.back_propL2L1_button.setText("B-propL2L1")
@@ -151,7 +149,7 @@ class Controller(QMainWindow):
 
     def initialize_and_draw_lineEdits_and_buttons(self):
 
-        # first layer
+        # first layer and L0L1
         for i in range(0, 2):
             c = m_net.get_coordinates(m_net.get_neuron(0, i))
 
@@ -173,9 +171,9 @@ class Controller(QMainWindow):
                 self.synapse_buttonsl0l1[i, j] = my_line_edit_w
 
         c = m_net.get_coordinates(m_net.get_neuron(0, 0))
-        self.l0wsum.setGeometry(c[0] + 110, c[1] - 80, 50, 20)
+        self.sumDOWL1L0_v.setGeometry(c[0] + 110, c[1] - 80, 50, 20)
 
-        # second layer
+        # second layer and L1L2
         for i in range(0, 4):
             c = m_net.get_coordinates(m_net.get_neuron(1, i))
 
@@ -195,8 +193,7 @@ class Controller(QMainWindow):
             self.synapse_buttonsl1l2[i, 0] = my_line_edit_w
 
         c = m_net.get_coordinates(m_net.get_neuron(1, 0))
-        self.l1wsum = QLineEdit(self)
-        self.l1wsum.setGeometry(c[0] + 110, c[1] - 50, 50, 20)
+        self.sumDOWL2L1_v.setGeometry(c[0] + 110, c[1] - 50, 50, 20)
 
         # third layer
         for i in range(0, 1):
@@ -219,11 +216,11 @@ class Controller(QMainWindow):
         self.delta_gradient_v.setGeometry(840, 310, 50, 20)
 
 
-        self.delta_printbox.setGeometry(650, 10, 100, 100)
+        self.delta_printbox.setGeometry(650, 10, 200, 100)
 
     def update_lineEdits_and_buttons(self):
 
-        # update first layer
+        # update first layer and L0L1
         synapses = getattr(m_net, 'synapsesl0l1')
 
         for i in range(0, 2):
@@ -240,9 +237,11 @@ class Controller(QMainWindow):
                 weight = getattr(m_net.synapsesl0l1[i, j], 'weight')
                 QPushButton.setText(self.synapse_buttonsl0l1[i, j], str(round(weight, 3)))
 
+        # sumDOW = getattr(m_net, 'sumDOWL1L0')
+        # QLineEdit.setText(self.sumDOWL1L0_v, str(round(sumDOW, 3)))
 
 
-        # update second layer
+        # update second layer and L1L2
         synapses = getattr(m_net, 'synapsesl1l2')
 
         for i in range(0, 4):
@@ -254,9 +253,14 @@ class Controller(QMainWindow):
             output = m_net.get_output(m_net.get_neuron(1, i))
             QLineEdit.setText(self.l1outputs[i][1], str(round(output, 3)))
 
-            # weights
+            # weights L1L2
             weight = getattr(synapses[i, 0], 'weight')
             QPushButton.setText(self.synapse_buttonsl1l2[i, 0], str(round(weight, 3)))
+
+        # sumDOW = getattr(m_net, 'sumDOWL2L1')
+        # QLineEdit.setText(self.sumDOWL2L1_v, str(round(sumDOW, 3)))
+
+
 
         # update third layer
 
@@ -312,12 +316,12 @@ class Controller(QMainWindow):
         qp.drawText(10, 210, "input")
         qp.drawText(125, 210, "output")
         qp.drawText(210, 180, "synapses")
-        qp.drawText(210, 140, "sum w")
+        qp.drawText(210, 140, "--")
 
         qp.drawText(310, 110, "input")
         qp.drawText(425, 110, "output")
         qp.drawText(510, 110, "synapses")
-        qp.drawText(510, 70, "sum w")
+        qp.drawText(510, 70, "--")
 
         qp.drawText(610, 260, "input")
         qp.drawText(730, 260, "output")
@@ -329,14 +333,14 @@ class Controller(QMainWindow):
     def delta_print(self, layerIndex, i, j):
         if layerIndex == 0:
             deltaweight = getattr(m_net.synapsesl0l1[i, j], 'deltaweight')
-            ww = getattr(m_net.synapsesl0l1[i, j], 'weight')
-            self.delta_printbox.setText(str(round(deltaweight, 3)))
-            print("i: " + str(i) + "j: " + str(j))
-            print("weight: " + str(ww))
-            print("deltaweight: " + str(deltaweight))
+            self.delta_printbox.setText("Delta_w: " + str(round(deltaweight, 8)))
+            self.delta_printbox.append("DOW: ")
+
+
         else:
             deltaweight = getattr(m_net.synapsesl1l2[i, j], 'deltaweight')
-            self.delta_printbox.setText(str(round(deltaweight, 3)))
+            self.delta_printbox.setText("Delta_w: " + str(round(deltaweight, 8)))
+            self.delta_printbox.append("DOW: ")
             print(deltaweight)
 
 
