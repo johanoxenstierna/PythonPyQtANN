@@ -12,6 +12,7 @@ class Synapse(object):
     def __init__(self, weight, neuron_left, neuron_right):
         self.weight = weight
         self.deltaweight = 0.000
+        self.DOW = 0.000
         self.neuron_left = neuron_left
         self.neuron_right = neuron_right
 
@@ -43,6 +44,9 @@ class Net:
         self.synapsesl0l1 = {}
         self.synapsesl1l2 = {}
 
+        self.sumDOWL2L1 = 0.000
+        self.sumDOWL1L0 = 0.000
+
 
         self.build_all_layers_and_neurons()
         self.build_all_synapses()
@@ -54,6 +58,12 @@ class Net:
         self.deltagradientsL1 = []
         self.recent_avg_error = 0
         self.recent_average_smoothing_factor = 0
+
+        # a = self.transfer_function_derivative(1)
+        # print("asfdsadf: " + str(a))
+
+
+
 
     def build_all_layers_and_neurons(self):
         self.layers.append(Layer())
@@ -84,12 +94,16 @@ class Net:
 
         setattr(self.synapsesl0l1[0, 0], 'weight', 0.5)
 
+
+
         # synapses between l1 and l2
         for i in range(0, 4):
             nl1 = self.get_neuron(1, i)
             for j in range(0, 1):
                 nl2 = self.get_neuron(2, j)
                 self.synapsesl1l2[i, j] = Synapse(self.inititial_weight_vals, nl1, nl2)
+
+        # setattr(self.synapsesl1l2[0, 0], 'weight', 0.5)
 
     def get_weight(self, synapseSet, neuronIndex1, neuronIndex2):
         if synapseSet == 0:
@@ -153,7 +167,7 @@ class Net:
         # for each neuron in layer 1
         for i in range(0, 4):
 
-            sum = 0
+            sum = 0.0
 
             # for each neuron in layer 0
             for j in range(0, 2):
@@ -177,7 +191,7 @@ class Net:
             
     def forward_propL1L2(self):
 
-        sum = 0
+        sum = 0.0
 
         for i in range(0, 4):
             prev_neuron = self.get_neuron(1, i)
@@ -196,8 +210,7 @@ class Net:
         # save above as example. first started doing rounding here but then realized rounding should be donw in viewer exclusively.
 
     def calculate_MSE(self):
-        output_neuron = self.get_neuron(2, 0)
-        self.delta = self.expected - self.get_output(output_neuron)
+        self.delta = self.expected - self.get_output(self.get_neuron(2, 0))
 
         # calculate MSE
         self.error = self.delta * self.delta
@@ -209,76 +222,38 @@ class Net:
         self.error = math.sqrt(self.error)
 
         #calculate deltagradient
-        self.deltagradientL2 = self.delta * self.transfer_function_derivative(self.get_output(output_neuron))
+        self.deltagradientL2 = self.delta * self.transfer_function_derivative(self.get_output(self.get_neuron(2, 0)))
 
     def back_propL2L1(self):
 
-        # calculate DOW derivatives of weights
-        sum_of_deltagrads = 0.0
+        # for each neuron in layer 1
         for i in range(0, 4):
-            sum_of_deltagrads += self.get_weight(1, i, 0) * self.deltagradientL2
 
-        #the dow (a weighting factor) is then multiplied to this neurons output val
-        # for i in range(0, 1):
-        this_output = self.get_output(self.get_neuron(1, 0))
-        new_deltaweight = sum_of_deltagrads * self.transfer_function_derivative(this_output)
-        setattr(self.synapsesl1l2[1, 0], 'deltaweight', new_deltaweight)
-        setattr(self.synapsesl0l1[0, 0], 'deltaweight', 3452)
-        print(new_deltaweight)
+            # calculate sum DOW derivatives of weights
+            # sumDOW = 0.0
+            # for j in range(0, 4):
+            #     # sumDOW += self.get_weight(1, i, 0) * self.deltagradientL2
+            #
+
+
+            #the dow (a weighting factor) is then multiplied to this neurons output val
+            # this_output = self.get_output(self.get_neuron(2, 0))
+            # new_deltaweight = sumDOW * self.transfer_function_derivative(this_output)
+            # print("transfer_function_derivative(this_output): " + str(self.transfer_function_derivative(this_output)))
+            # setattr(self.synapsesl1l2[i, 0], 'deltaweight', new_deltaweight)
+
+            g = self.get_output(self.get_neuron(1, i)) * self.deltagradientL2
+
+            setattr(self.synapsesl1l2[i, 0], 'deltaweight', g)
 
 
 
     def back_propL1L0(self):
-
-        # calculate DOW derivatives of weights
-        sum_of_deltagrads = 0.0
+        # for each neuron in layer 2
         for i in range(0, 2):
-            for j in range(0, 4):
-                sum_of_deltagrads += self.get_weight(0, i, j) * self.get_deltaweight(1, j, 0)
-                # print("w: " + str(self.get_weight(0, i, j)))
-                # print("dw: " + str(self.get_deltaweight(1, j, 0)))
-
-        print(sum_of_deltagrads)
-
-        #the dow (a weighting factor) is then multiplied to this neurons output val
-        for i in range(0, 2):
-            for j in range(0, 4):
-                this_output = self.get_output(self.get_neuron(0, i))
-                new_deltaweight = sum_of_deltagrads * self.transfer_function_derivative(this_output)
-                setattr(self.synapsesl0l1[i, j], 'deltaweight', new_deltaweight)
-
-
-            # output_neuron = self.get_neuron(1, i)
-            # current_weight = self.get_weight(0, i, 0)
-            #
-            # # my_gradient = previous_gradient * current_weight
-            #
-            # # sum += my_gradient
-
-        # setattr(self.get_neuron(0, i), 'gradient', sum)
-        #
 
 
 
-        #
-        #
-        # # get average error
-        # self.error /= 1
-        #
-        # # get squared error
-        # self.error = math.sqrt(self.error)
-        #
-        # #calculate hidden layer gradients
-        # for i in range(0, 4):
-        #     neuron = self.get_neuron(1, i)
-        #
-        #     # calculate hidden gradients
-        #     # calculate derivatives of weights
-        #     # get neuron in last layer
-        #     my_gradient = delta * self.get_weight(1, i, 0)
-        #
-        #     setattr(self.get_neuron(1, i), 'gradient', my_gradient)
-        #     print(my_gradient)
 
     def calc_output_gradients(self):
         pass
@@ -286,8 +261,8 @@ class Net:
     # def back_propL0(self):
             
     def transfer_function(self, x):
-        #use hyperbolic tan
-        return math.tanh(x)
+        return 1 / (1 + math.pow(math.e,  -x))
+
 
     def update_weights(self):
         # update first set
@@ -308,8 +283,8 @@ class Net:
                 weight += new_gradient
                 setattr(self.synapsesl0l1[i, j], 'weight', weight)
 
-    def transfer_function_derivative(self, x):
-        return 1.0 - x * x
+    def transfer_function_derivative(self, y):
+        return y * (1 - y)
 
 
 
