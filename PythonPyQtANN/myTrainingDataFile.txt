@@ -1,8 +1,29 @@
-In; 1; 1; Out; 0
-In; 0.999; 0.999; Out; 0.001
-In; 0.999; 0.999; Out; 0.001
-In; 0.999; 0.999; Out; 0.001
+In; 1.0; 1.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
+In; 1.0; 1.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 0.0; 0.0; Expected; 0.00
+In; 0.0; 0.0; Expected; 0.00
+In; 0.0; 0.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 1.0; 1.0; Expected; 0.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
+In; 0.0; 1.0; Expected; 1.00
 
 
-X: 23   Y: 45   Result: Ja
+
+
+
 

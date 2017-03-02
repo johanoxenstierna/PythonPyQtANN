@@ -7,7 +7,6 @@ class Neuron:
         self.coordinatesMidpoint = coordinates
         self.inputn = inputn
         self.output = output
-        self.gradient = 0.0
 
     def __repr__(self):
         return "Neuron(i:{},xy:'{}',inp:{},out:'{}')".format(self.neuronIndex, self.coordinatesMidpoint, self.inputn, self.output)

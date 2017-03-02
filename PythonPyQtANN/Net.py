@@ -32,37 +32,25 @@ class Net:
         #
         # training Data
         self.m_training_data = TrainingData()
-        
+
         #initital variables
         self.inititial_weight_vals = 0.1
-        self.learning_rate = 0.1
+        self.learning_rate = 1
         self.momentum = 0.0
 
 
         #MUTABLE : CHANGE CONTENT OF OBJECT WITHOUT CHANGING IDENTITY
         self.layers = []
-        self.synapsesl0l1 = {}
-        self.synapsesl1l2 = {}
-
-        self.sumDOWL2L1 = 0.000
-        self.sumDOWL1L0 = 0.000
-
+        self.synapsesL0L1 = {}
+        self.synapsesL1L2 = {}
 
         self.build_all_layers_and_neurons()
         self.build_all_synapses()
 
         self.expected = 0.000
-        self.error = 0.000
+        self.MSE = 0.000
         self.delta = 0.000
         self.deltagradientL2 = 0.000
-        self.deltagradientsL1 = []
-        self.recent_avg_error = 0
-        self.recent_average_smoothing_factor = 0
-
-        # a = self.transfer_function_derivative(1)
-        # print("asfdsadf: " + str(a))
-
-
 
 
     def build_all_layers_and_neurons(self):
@@ -90,9 +78,9 @@ class Net:
             nl0 = self.get_neuron(0, i)
             for j in range(0, 4):
                 nl1 = self.get_neuron(1, j)
-                self.synapsesl0l1[i, j] = Synapse(self.inititial_weight_vals, nl0, nl1)
+                self.synapsesL0L1[i, j] = Synapse(self.inititial_weight_vals, nl0, nl1)
 
-        setattr(self.synapsesl0l1[0, 0], 'weight', 0.5)
+        # setattr(self.synapsesL0L1[0, 0], 'weight', 0.5)
 
 
 
@@ -101,21 +89,21 @@ class Net:
             nl1 = self.get_neuron(1, i)
             for j in range(0, 1):
                 nl2 = self.get_neuron(2, j)
-                self.synapsesl1l2[i, j] = Synapse(self.inititial_weight_vals, nl1, nl2)
+                self.synapsesL1L2[i, j] = Synapse(self.inititial_weight_vals, nl1, nl2)
 
-        # setattr(self.synapsesl1l2[0, 0], 'weight', 0.5)
+        # setattr(self.synapsesL1L2[0, 0], 'weight', 0.5)
 
     def get_weight(self, synapseSet, neuronIndex1, neuronIndex2):
         if synapseSet == 0:
-            return getattr(self.synapsesl0l1[neuronIndex1, neuronIndex2], 'weight')
+            return getattr(self.synapsesL0L1[neuronIndex1, neuronIndex2], 'weight')
         else:
-            return getattr(self.synapsesl1l2[neuronIndex1, neuronIndex2], 'weight')
+            return getattr(self.synapsesL1L2[neuronIndex1, neuronIndex2], 'weight')
 
     def get_deltaweight(self, synapseSet, neuronIndex1, neuronIndex2):
         if synapseSet == 0:
-            return getattr(self.synapsesl0l1[neuronIndex1, neuronIndex2], 'deltaweight')
+            return getattr(self.synapsesL0L1[neuronIndex1, neuronIndex2], 'deltaweight')
         else:
-            return getattr(self.synapsesl1l2[neuronIndex1, neuronIndex2], 'deltaweight')
+            return getattr(self.synapsesL1L2[neuronIndex1, neuronIndex2], 'deltaweight')
 
     def get_neuron(self, layerIndex, neuronIndex):
         return self.layers[layerIndex].get_neuron_from_layer(neuronIndex)
@@ -140,9 +128,6 @@ class Net:
     def get_output(self, Neuron):
         return float(getattr(Neuron, 'output'))
 
-    def get_gradient(self, Neuron):
-        return float(getattr(Neuron, 'gradient'))
-
     def load_inputs(self):
         #this is highly hard-coded
 
@@ -157,7 +142,7 @@ class Net:
         setattr(self.get_neuron(0, 0), 'output', inputs[0])
         setattr(self.get_neuron(0, 1), 'output', inputs[1])
 
-        self.expected = float(inputs[2])
+        self.expected = self.transfer_function(float(inputs[2]))
 
     def get_layer(self, index):
         return self.layers[index]
@@ -188,7 +173,7 @@ class Net:
 
 
             # save above as example. first started doing rounding here but then realized rounding should be donw in viewer exclusively.
-            
+
     def forward_propL1L2(self):
 
         sum = 0.0
@@ -209,17 +194,17 @@ class Net:
 
         # save above as example. first started doing rounding here but then realized rounding should be donw in viewer exclusively.
 
-    def calculate_MSE(self):
+    def calculate_MSE_and_deltagradient(self):
         self.delta = self.expected - self.get_output(self.get_neuron(2, 0))
 
         # calculate MSE
-        self.error = self.delta * self.delta
+        self.MSE = self.delta * self.delta
 
         # get average error
-        self.error /= 1
+        self.MSE /= 1
 
         # get squared error
-        self.error = math.sqrt(self.error)
+        self.MSE = math.sqrt(self.MSE)
 
         #calculate deltagradient
         self.deltagradientL2 = self.delta * self.transfer_function_derivative(self.get_output(self.get_neuron(2, 0)))
@@ -229,62 +214,62 @@ class Net:
         # for each neuron in layer 1
         for i in range(0, 4):
 
-            # calculate sum DOW derivatives of weights
-            # sumDOW = 0.0
-            # for j in range(0, 4):
-            #     # sumDOW += self.get_weight(1, i, 0) * self.deltagradientL2
-            #
-
-
-            #the dow (a weighting factor) is then multiplied to this neurons output val
-            # this_output = self.get_output(self.get_neuron(2, 0))
-            # new_deltaweight = sumDOW * self.transfer_function_derivative(this_output)
-            # print("transfer_function_derivative(this_output): " + str(self.transfer_function_derivative(this_output)))
-            # setattr(self.synapsesl1l2[i, 0], 'deltaweight', new_deltaweight)
-
-            g = self.get_output(self.get_neuron(1, i)) * self.deltagradientL2
-
-            setattr(self.synapsesl1l2[i, 0], 'deltaweight', g)
-
-
+            result = self.get_output(self.get_neuron(1, i)) * self.deltagradientL2
+            setattr(self.synapsesL1L2[i, 0], 'deltaweight', result)
 
     def back_propL1L0(self):
         # for each neuron in layer 2
         for i in range(0, 2):
+            for j in range(0, 4):
+                neuronL1 = self.get_neuron(1, j)
+                neuronL0 = self.get_neuron(0, i)
+                part1 = self.transfer_function_derivative(self.get_output(neuronL1)) * self.deltagradientL2
+                part2 = self.get_weight(1, j, 0)
+                part3 = self.get_output(neuronL0)
 
 
-
+                # part1 = self.transfer_function_derivative(self.get_output(neuron))
+                # part2 = self.get_weight(1, j, 0)
+                # part3 = self.deltagradientL2
+                # part4 = self.get_weight(0, i, j)
+                #
+                result = part1 * part2 * part3
+                setattr(self.synapsesL0L1[i, j], 'deltaweight', result)
 
     def calc_output_gradients(self):
         pass
 
     # def back_propL0(self):
-            
-    def transfer_function(self, x):
-        return 1 / (1 + math.pow(math.e,  -x))
 
+    def transfer_function(self, y):
+        return 1 / (1 + math.pow(math.e,  -y))
 
     def update_weights(self):
+
         # update first set
-
-        # 0.1 *
-
         for i in range(0, 2):
             for j in range(0, 4):
-                neuron = self.get_neuron(0, i)
-                old_gradient = self.get_gradient(neuron)
-                new_gradient = self.learning_rate * self.get_output(neuron) * self.get_gradient(neuron) + \
-                    self.momentum * old_gradient
+                old_weight = self.get_weight(0, i, j)
+                weight_change = self.learning_rate * self.get_deltaweight(0, i, j) + \
+                                    self.momentum * old_weight
 
-                print("output: " + str(self.get_output(neuron)))
+                weight = self.get_weight(0, i, j)
+                weight += weight_change
+                setattr(self.synapsesL0L1[i, j], 'weight', weight)
 
-                # setattr(neuron, 'gradient', new_gradient)
-                weight = getattr(self.synapsesl0l1[i, j], 'weight')
-                weight += new_gradient
-                setattr(self.synapsesl0l1[i, j], 'weight', weight)
+        # update first set
+        for i in range(0, 4):
+            old_weight = self.get_weight(1, i, 0)
+            weight_change = self.learning_rate * self.get_deltaweight(1, i, 0) + \
+                                self.momentum * old_weight
+
+            weight = self.get_weight(1, i, 0)
+            weight += weight_change
+            setattr(self.synapsesL1L2[i, 0], 'weight', weight)
+
 
     def transfer_function_derivative(self, y):
-        return y * (1 - y)
+        return 1 / (1 + math.pow(math.e,  -y)) * (1 - 1 / (1 + math.pow(math.e,  -y)))
 
 
 
