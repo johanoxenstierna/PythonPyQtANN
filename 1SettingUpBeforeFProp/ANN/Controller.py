@@ -7,7 +7,7 @@ from PyQt5.QtGui import *
 
 from ANN.Net import Net
 from ANN.TrainingData import TrainingData
-# dfdf
+
 class Controller(QMainWindow):
     def __init__(self):
         super().__init__()
