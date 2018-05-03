@@ -1,0 +1,8 @@
+In; 0; 0; 0; Expected; 0
+In; 0; 0; 0.9; Expected; 0
+In; 0; 0.9; 0; Expected; 0
+In; 0; 1; 1; Expected; 1
+In; 0.9; 0; 0; Expected; 0
+In; 0.9; 0; 0.9; Expected; 0
+In; 1; 1; 0; Expected; 1
+In; 0.9; 0.9; 0.9; Expected; 0
